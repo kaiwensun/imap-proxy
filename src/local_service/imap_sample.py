@@ -1,5 +1,5 @@
 from imaplib import IMAP4_SSL
-from settings import USER_NAME, IMAP_TOKEN, IMAP_ADDRESS, APP_NAME, APP_VERSION
+from config.settings import USER_NAME, IMAP_TOKEN, IMAP_ADDRESS, APP_NAME, APP_VERSION
 
 import email
 
@@ -13,9 +13,6 @@ def main():
         _, mail_ids = imap.search(None, 'UnSeen')
         mail_ids = mail_ids[0].split()
         print(f"Total unread: {len(mail_ids)}")
-
-        import pdb
-        # pdb.set_trace()
 
         for mail_id in mail_ids:
             data = imap.fetch(mail_id, "(RFC822)")[1]
