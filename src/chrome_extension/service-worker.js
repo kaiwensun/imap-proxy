@@ -7,7 +7,7 @@ let alarmHandlers = {
         client.getUnreadEmailIds(
             res => {
                 console.log(res);
-                chrome.action.setBadgeText({ text: res.count.toString() });
+                chrome.action.setBadgeText({ text: res.count == 0 ? "" : res.count.toString() });
             },
             err => {
                 console.error(err);
