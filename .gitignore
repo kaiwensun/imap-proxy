@@ -1,4 +1,4 @@
-src/local_service/local_settings.py
+**/local_settings.py
 src/local_service/.venv
 src/local_service/.venv_dev
 *.pyc
