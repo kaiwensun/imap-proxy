@@ -1,5 +1,7 @@
 'use strict';
 
+importScripts('client.js');
+
 const PERIOD_IN_MINUTES = 5;
 
 let alarmHandlers = {
@@ -21,10 +23,19 @@ let alarmHandlers = {
                 );
             }
         );
+    },
+    "hello": (alarm) => {
+        console.log("this is inside hello");
+        console.log(alarm);
     }
 };
 
-chrome.runtime.onInstalled.addListener(() => {
+function alarmListener(alarm) {
+    console.log(alarm);
+    alarmHandlers[alarm.name](alarm);
+};
+
+function initializeAlarm() {
     chrome.action.setBadgeText({ text: "?" });
     chrome.alarms.create(
         "sync-count",
@@ -33,11 +44,21 @@ chrome.runtime.onInstalled.addListener(() => {
             periodInMinutes: PERIOD_IN_MINUTES
         }
     );
-    chrome.alarms.onAlarm.addListener(alarm => {
-        console.log(alarm);
-        alarmHandlers[alarm.name](alarm);
-    });
-});
+    chrome.alarms.create(
+        "hello",
+        {
+            delayInMinutes: 0,
+            periodInMinutes: 0.05
+        }
+    );
+    if (!chrome.alarms.onAlarm.hasListener(alarmListener)) {
+        chrome.alarms.onAlarm.addListener(alarmListener);
+    }
+}
 
-importScripts('client.js');
+chrome.runtime.onInstalled.addListener(initializeAlarm);
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendresponse) => {console.log("onMessage!"); console.log(message); console.log(sender); console.log(sendresponse)});
+
 

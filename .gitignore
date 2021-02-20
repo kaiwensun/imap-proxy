@@ -2,4 +2,5 @@
 src/local_service/.venv
 src/local_service/.venv_dev
 *.pyc
+*.log
 **/.DS_Store

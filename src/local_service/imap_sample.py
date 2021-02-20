@@ -1,7 +1,8 @@
 from imaplib import IMAP4_SSL
 from config.settings import USER_NAME, IMAP_TOKEN, IMAP_ADDRESS, APP_NAME, APP_VERSION
 
-import email, codecs
+import email
+import codecs
 
 
 def main():
