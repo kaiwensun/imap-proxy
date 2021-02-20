@@ -1,7 +1,7 @@
 from imaplib import IMAP4_SSL
 from config.settings import USER_NAME, IMAP_TOKEN, IMAP_ADDRESS, APP_NAME, APP_VERSION
 
-import email
+import email, codecs
 
 
 def main():
@@ -9,6 +9,15 @@ def main():
         imap.noop()
         imap.xatom(f'ID ("name" "{APP_NAME}" "version" "{APP_VERSION}")')
         imap.login(USER_NAME, IMAP_TOKEN)
+        for folder in imap.list()[1]:
+            if folder.startswith(b'() "/" "'):
+                print(folder)
+                folder = decode_folder_name(folder)[8:-1]
+                print(folder)
+                print(encode_folder_name(folder))
+                imap.select(f'"{encode_folder_name(folder)}"')
+                print("====")
+        print("done!")
         imap.select(readonly=True)
         _, mail_ids = imap.search(None, 'UnSeen')
         mail_ids = mail_ids[0].split()
@@ -23,6 +32,14 @@ def main():
                     msg = email.message_from_string(
                         response_part[1].decode('utf-8'))
                     print(parse_subject(msg))
+
+
+def decode_folder_name(name):
+    return codecs.decode(name.replace(b"&", b"+"), encoding='utf-7')
+
+
+def encode_folder_name(name):
+    return codecs.encode(name, encoding='utf-7').replace(b"+", b"&")
 
 
 def parse_subject(msg):
