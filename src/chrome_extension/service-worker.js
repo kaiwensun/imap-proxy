@@ -1,6 +1,7 @@
 'use strict';
 
 importScripts('client.js');
+importScripts('logger.js');
 
 const PERIOD_IN_MINUTES = 5;
 
@@ -9,11 +10,13 @@ let alarmHandlers = {
         client.getUnreadEmailIds(
             res => {
                 console.log(res);
+                logger.log(res);
                 chrome.action.setBadgeText({ text: res.count == 0 ? "" : res.count.toString() });
             },
             err => {
                 console.error(err);
-                chrome.action.setBadgeText({ text: "x" });
+                logger.log(err);
+                chrome.action.setBadgeText({ text: "X" });
                 chrome.alarms.create(
                     "sync-count",
                     {
@@ -23,20 +26,17 @@ let alarmHandlers = {
                 );
             }
         );
-    },
-    "hello": (alarm) => {
-        console.log("this is inside hello");
-        console.log(alarm);
     }
 };
 
 function alarmListener(alarm) {
     console.log(alarm);
+    logger.log([`alarm ${alarm.name} triggered`, alarm]);
     alarmHandlers[alarm.name](alarm);
 };
 
 function initializeAlarm() {
-    chrome.action.setBadgeText({ text: "?" });
+    logger.log("initializeAlarm");
     chrome.alarms.create(
         "sync-count",
         {
@@ -44,21 +44,23 @@ function initializeAlarm() {
             periodInMinutes: PERIOD_IN_MINUTES
         }
     );
-    chrome.alarms.create(
-        "hello",
-        {
-            delayInMinutes: 0,
-            periodInMinutes: 0.05
-        }
-    );
-    if (!chrome.alarms.onAlarm.hasListener(alarmListener)) {
-        chrome.alarms.onAlarm.addListener(alarmListener);
-    }
 }
 
-chrome.runtime.onInstalled.addListener(initializeAlarm);
+initializeAlarm();
 
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.action.setBadgeText({ text: "?" });
+});
 
-chrome.runtime.onMessage.addListener((message, sender, sendresponse) => {console.log("onMessage!"); console.log(message); console.log(sender); console.log(sendresponse)});
-
-
+/**
+ * https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#event_listeners
+ * While this approach works in a persistent background page, it is not guaranteed
+ * to work in a service worker due to the asynchronous nature of the Storage APIs.
+ * When a service worker is terminated, so are the event listeners associated with it.
+ */
+if (!chrome.alarms.onAlarm.hasListener(alarmListener)) {
+    logger.log("addListener(alarmListener)");
+    chrome.alarms.onAlarm.addListener(alarmListener);
+} else {
+    logger.log("alarmListener already registered");
+}

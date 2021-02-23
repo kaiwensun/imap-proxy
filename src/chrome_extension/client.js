@@ -3,11 +3,14 @@ class Client {
         this.endpoint = endpoint;
     }
 
-    getUnreadEmailIds(onSuccess, onError) {
-        return fetch(`${this.endpoint}/imap/unread_email_ids`)
-            .then(response => response.json())
-            .then(onSuccess)
-            .catch(onError);
+    async getUnreadEmailIds(onSuccess, onError) {
+        try {
+            const response = await fetch(`${this.endpoint}/imap/unread_email_ids`);
+            const json = await response.json();
+            return onSuccess(json);
+        } catch (err) {
+            return onError(err);
+        }
     }
 }
 
