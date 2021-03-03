@@ -29,6 +29,7 @@ def main():
                 folder_emails = fetch_emails(imap, mail_ids)
                 for email in folder_emails:
                     email["folder"] = folder_name
+                    email["utf7-folder"] = byte_folder_name.decode("ascii")
                 emails += folder_emails
                 print("====")
         print("done!")
@@ -55,14 +56,15 @@ def fetch_emails(imap, mail_ids):
                 sender = email.utils.parseaddr(parse_header(msg["FROM"]))
                 receiver = email.utils.parseaddr(parse_header(msg["TO"]))
                 date = email.utils.parsedate_to_datetime(msg["Date"])
-                import pdb; pdb.set_trace()
                 timestamp = int(datetime.timestamp(date))
                 print(subject)
                 res.append({
                     "eid": mail_id,
                     "subject": subject,
-                    "sender": sender,
-                    "receiver": receiver,
+                    "sender_name": sender[0],
+                    "sender_addr": sender[1],
+                    "receiver_name": receiver[0],
+                    "receiver_addr": receiver[1],
                     "timestamp": timestamp
                 })
     return res
@@ -74,7 +76,8 @@ def decode_folder_name(name):
 
 def encode_folder_name(name):
     # this method doesn't always work
-    return codecs.encode(name, encoding='utf-7').decode("ascii").replace("+", "&").replace("&-", "+-")
+    return codecs.encode(
+        name, encoding='utf-7').decode("ascii").replace("+", "&").replace("&-", "+-")
 
 
 def parse_header(line):
