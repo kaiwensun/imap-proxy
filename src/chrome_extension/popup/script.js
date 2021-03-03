@@ -1,7 +1,7 @@
 let changeColor = document.getElementById("changeColor");
 
-chrome.storage.local.get("color", ({ color }) => {
-    changeColor.style.backgroundColor = color;
+chrome.storage.local.get(["checkResult"], ({ checkResult }) => {
+    if (checkResult !== undefined) {
+        document.querySelector("#emails").innerHTML = JSON.stringify(checkResult);
+    }
 });
-
-chrome.action.setBadgeText({text: "123"});

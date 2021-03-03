@@ -1,12 +1,16 @@
-button {
-    height: 30px;
-    width: 30px;
-    outline: none;
-    margin: 10px;
-    border: none;
-    border-radius: 2px;
+html {
+    margin: 0;
+    padding: 0;
 }
 
-button.current {
-    box-shadow: 0 0 0 2px white, 0 0 0 4px black;
+body {
+    margin: 0;
+    padding: 12px;
+    background-color: #777777;
+}
+
+#content {
+    background-color: #cccccc;
+    margin-top: -12px;
+    width: 500px;
 }
