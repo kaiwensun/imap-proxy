@@ -4,13 +4,66 @@ html {
 }
 
 body {
+    font-size: 14px;
     margin: 0;
-    padding: 12px;
-    background-color: #777777;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333333;
 }
 
 #content {
-    background-color: #cccccc;
-    margin-top: -12px;
-    width: 500px;
+    background-color: #e7e7e7;
+    width: 600px;
+    overflow-y: scroll;
+    padding: 16px 12px;
+}
+
+.section {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#emails {
+    border-top: 1px solid #555555;
+}
+
+.folder {
+    border-radius: 4px;
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+h3.folder-name {
+    margin: 0;
+    padding: 4px;
+    background-color: #c4c4c4;
+}
+
+.email-row {
+    display: grid;
+    grid-template-columns: 16px 2fr 5fr 90px;
+    background-color: #eeeeee;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.cell {
+    margin-left: 1px;
+    margin-right: 1px;
+    padding: 0 4px;
+    background-color: #ffffff;
+    line-height: 150%;
+}
+
+.thread-size {
+    text-align: center;
+}
+
+.last-active-time {
+    text-align: right;
 }
