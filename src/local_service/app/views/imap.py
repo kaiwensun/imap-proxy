@@ -53,8 +53,17 @@ def fetch_emails(imap, email_ids):
                 subject = parse_header(msg["Subject"])
                 sender = email.utils.parseaddr(parse_header(msg["FROM"]))
                 receiver = email.utils.parseaddr(parse_header(msg["TO"]))
-                date = email.utils.parsedate_to_datetime(msg["Date"])
-                timestamp = int(datetime.timestamp(date))
+                date_str = msg["Date"] or msg["Resent-Date"]
+                if not date_str:
+                    date_str = msg["Received"].split("\n")[-1].strip()
+                try:
+                    date = email.utils.parsedate_to_datetime(date_str)
+                    timestamp = int(datetime.timestamp(date))
+                except TypeError:
+                    date = None
+                    timestamp = 0
+                    print("failed to get date")
+                    print(msg.items())
                 print(subject)
                 res.append({
                     "eid": email_id,
