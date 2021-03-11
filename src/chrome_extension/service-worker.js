@@ -48,12 +48,14 @@ let alarmHandlers = {
                     chrome.action.setBadgeBackgroundColor({ color: "#FFA500" }, () => {
                         console.log("checking email");
                         logger.log("checking email");
+                        globalThis.serviceWorker.postMessage("checking email");
                         client.getUnreadEmailIds(
                             checkResult => {
                                 chrome.action.setBadgeBackgroundColor({ color: "#FF0000" }, () => {
                                     chrome.storage.local.set({ checkResult }, () => {
                                         console.log(checkResult);
                                         logger.log(checkResult);
+                                        globalThis.serviceWorker.postMessage(checkResult);
                                         chrome.action.setBadgeText({ text: checkResult.count == 0 ? "" : checkResult.count.toString() });
                                     });
                                 });
@@ -129,3 +131,5 @@ if (!chrome.alarms.onAlarm.hasListener(alarmListener)) {
 } else {
     logger.log("alarmListener already registered");
 }
+
+globalThis.addEventListener('message', event => { console.log("received event: " + event.data);})
