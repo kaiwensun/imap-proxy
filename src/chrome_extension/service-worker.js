@@ -1,7 +1,10 @@
 'use strict';
 
+importScripts('imports.js');
 importScripts('client.js');
 importScripts('logger.js');
+importScripts('storage.js');
+importScripts('events/email_storage_refreshed.js');
 
 const PERIOD_IN_MINUTES = 5;  // must be integer
 const LAST_CHECK_TIME_KEY = "lastCheckTime";
@@ -55,6 +58,7 @@ let alarmHandlers = {
                                     chrome.storage.local.set({ checkResult }, () => {
                                         console.log(checkResult);
                                         logger.log(checkResult);
+                                        EventManager.send(C_E_EMAIL_SUMMARY_FETCHED);
                                         globalThis.serviceWorker.postMessage(checkResult);
                                         chrome.action.setBadgeText({ text: checkResult.count == 0 ? "" : checkResult.count.toString() });
                                     });
