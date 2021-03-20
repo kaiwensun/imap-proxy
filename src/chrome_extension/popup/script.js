@@ -13,17 +13,7 @@ function genSubjectPrefixRegExp() {
     return new RegExp(pattern, "i");
 }
 
-let subjectPrefixes = genSubjectPrefixRegExp();
-
-chrome.storage.local.get(["checkResult"], ({ checkResult }) => {
-    if (checkResult !== undefined) {
-        document.querySelector("#emails").innerHTML = renderAllEmails(checkResult);
-    }
-});
-
-function renderAllEmails(checkResult) {
-    return groupEmailsByFolder(checkResult.emails).map(renderFolder).join("");
-}
+const subjectPrefixes = genSubjectPrefixRegExp();
 
 function renderFolder([folder, emails]) {
     return `
@@ -62,7 +52,7 @@ function timetampToString(timestamp) {
     let now = new Date();
     let then = new Date(timestamp * 1000);
     let offset = new Date().setHours(0, 0, 0, 0) % oneDayLong;
-    
+
     if (Math.floor((now - offset) / oneDayLong) != Math.floor((then - offset) / oneDayLong)) {
         return [then.getFullYear(), then.getMonth() + 1, then.getDate()].
             map(n => n.toString().padStart(2, "0")).
@@ -109,7 +99,31 @@ function groupEmailsByFolder(emails) {
             } else if (folder2.toUpperCase() === "INBOX") {
                 return Number.POSITIVE_INFINITY;
             } else {
-                emails2[0].last_active_time - emails1[0].last_active_time;
+                console.log(`${folder1}, ${folder2}; ${emails2[0].last_active_time}, ${emails1[0].last_active_time}`)
+                return emails2[0].last_active_time - emails1[0].last_active_time;
             }
         });
 }
+
+async function renderLastUpdateTime() {
+    let lastCheckTime = await Storage.get(Storage.LAST_SYNC_SUCCESS_TIME);
+    if (lastCheckTime === null) {
+        lastCheckTime = "never";
+    } else {
+        lastCheckTime = timetampToString(lastCheckTime / 1000);
+    }
+    document.querySelector("#last-update-time").textContent = lastCheckTime;
+}
+
+async function renderAllEmails() {
+    let result = await Storage.get(Storage.SYNC_RESULT);
+    if (result !== undefined) {
+        console.log(groupEmailsByFolder(result.emails));
+        let html = groupEmailsByFolder(result.emails).map(renderFolder).join("");
+        document.querySelector("#emails").innerHTML = html;
+    }
+
+}
+
+renderLastUpdateTime();
+renderAllEmails();
