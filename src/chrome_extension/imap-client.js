@@ -5,6 +5,9 @@ class ImapClient {
 
     async getUnreadEmails() {
         const response = await fetch(`${this.endpoint}/imap/unread_email_ids`);
+        if (response.status !== 200) {
+            throw response;
+        }
         return await response.json();
     }
 }

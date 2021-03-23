@@ -48,8 +48,10 @@ def fetch_emails(imap, email_ids):
         print(email_id)
         for response_part in data:
             if isinstance(response_part, tuple):
+                # import pdb
+                # pdb.set_trace()
                 msg = email.message_from_string(
-                    response_part[1].decode('utf-8'))
+                    attempt_decode(response_part[1]))
                 subject = parse_header(msg["Subject"])
                 sender = email.utils.parseaddr(parse_header(msg["FROM"]))
                 receiver = email.utils.parseaddr(parse_header(msg["TO"]))
@@ -75,6 +77,16 @@ def fetch_emails(imap, email_ids):
                     "timestamp": timestamp
                 })
     return res
+
+
+def attempt_decode(msg):
+    codes = ["utf-8", "gb2312", "gbk"]
+    for code in codes:
+        try:
+            return msg.decode(code)
+        except ValueError as e:
+            error = e
+    raise error
 
 
 def decode_folder_name(name):
