@@ -44,7 +44,7 @@ EventManager.SYNC_EMAIL = "SYNC_EMAIL";
 EventManager.SYNC_EMAIL_TIMER_FIRED = "SYNC_EMAIL_TIMER_FIRED";
 EventManager.EMAIL_SYNC_SUCCESS = "EMAIL_SYNC_SUCCESS"
 EventManager.EMAIL_SYNC_FAILURE = "EMAIL_SYNC_FAILURE"
-EventManager.SYNC_EMAIL_PERIOD_IN_MINUTES = 5;
+EventManager.SYNC_EMAIL_PERIOD_IN_MINUTES = 10;
 
 
 globalThis.addEventListener("message", event => {
