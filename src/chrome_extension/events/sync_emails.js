@@ -20,7 +20,7 @@ EventManager.onreceiveAsync(EventManager.SYNC_EMAIL, async () => {
         console.log(result);
         await Badge.setBackgroundColor(Badge.COLOR_NORMAL);
         await Badge.setText(result.count);
-        await Storage.save(Storage.SYNC_RESULT, result);
+        await Storage.updateEmails(result);
         await Storage.save(Storage.LAST_SYNC_SUCCESS_TIME, new Date().getTime());
         EventManager.send(EventManager.EMAIL_SYNC_SUCCESS);
     } catch (error) {

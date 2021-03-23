@@ -60,6 +60,10 @@ h3.folder-name {
     line-height: 150%;
 }
 
+.new-email .cell {
+    background-color: #ffffcc;
+}
+
 .thread-size {
     text-align: center;
 }

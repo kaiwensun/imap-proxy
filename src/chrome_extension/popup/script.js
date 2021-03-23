@@ -29,8 +29,9 @@ function renderFolder([folder, emails]) {
 }
 
 function renderEmail(email) {
+    console.log(email.is_new)
     return `
-        <div class="email-row">
+        <div class="email-row ${email.is_new ? 'new-email' : ''} ${email.is_new} j">
             <div class="thread-size cell">
                 ${email.count}
             </div>
@@ -73,9 +74,11 @@ function groupEmailsWithinFolder(emails) {
             count: 0,
             subject: subject,
             sender_names: [],
-            last_active_time: email.timestamp
+            last_active_time: email.timestamp,
+            is_new: false
         }
         groups[subject].count++;
+        groups[subject].is_new ||= email.is_new;
         if (!groups[subject].sender_names.includes(email.sender_name)) {
             groups[subject].sender_names.push(email.sender_name);
         }
@@ -125,5 +128,14 @@ async function renderAllEmails() {
 
 }
 
-renderLastUpdateTime();
-renderAllEmails();
+async function main() {
+    await renderLastUpdateTime();
+    await renderAllEmails();
+    let lastSyncStartTime = await Storage.get(Storage.LAST_ATTEMPT_SYNC_START_TIME, 0);
+    let lastSyncEndTime = await Storage.get(Storage.LAST_ATTEMPT_SYNC_END_TIME, lastSyncStartTime - 1);
+    if (lastSyncEndTime > lastSyncStartTime) {
+        await Storage.markEmailsAsOld();
+    }
+}
+
+main();

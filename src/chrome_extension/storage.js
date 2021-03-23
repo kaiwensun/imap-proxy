@@ -41,6 +41,22 @@ class Storage {
             chrome.storage.local.remove(key, resolve);
         });
     }
+
+    static async updateEmails(newResult) {
+        function include(emails, target) {
+            const PROPS = ["eid", "folder", "sender_addr", "timestamp"];
+            return emails.find(email => PROPS.every(prop => email[prop] == target[prop])) !== undefined;
+        }
+        let oldResult = await Storage.get(Storage.SYNC_RESULT);
+        newResult.emails.forEach(email => email.is_new = !include(oldResult.emails, email));
+        await Storage.save(Storage.SYNC_RESULT, newResult);
+    }
+
+    static async markEmailsAsOld() {
+        let result = await Storage.get(Storage.SYNC_RESULT);
+        result.emails.forEach(email => email.is_new = false);
+        await Storage.save(Storage.SYNC_RESULT, result);
+    }
 }
 
 Storage.LAST_SYNC_SUCCESS_TIME = "LAST_SYNC_SUCCESS_TIME";
