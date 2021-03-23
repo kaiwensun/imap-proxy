@@ -43,12 +43,20 @@ class Storage {
     }
 
     static async updateEmails(newResult) {
-        function include(emails, target) {
-            const PROPS = ["eid", "folder", "sender_addr", "timestamp"];
-            return emails.find(email => PROPS.every(prop => email[prop] == target[prop])) !== undefined;
-        }
+        const PROPS = ["eid", "folder", "subject", "timestamp"];
         let oldResult = await Storage.get(Storage.SYNC_RESULT);
-        newResult.emails.forEach(email => email.is_new = !include(oldResult.emails, email));
+        newResult.emails.forEach(email => email.is_new = true);
+        for (let oldEmail of oldResult.emails) {
+            if (oldEmail.is_new) {
+                continue;
+            }
+            for (let newEmail of newResult.emails) {
+                if (PROPS.every(prop => oldEmail[prop] === newEmail[prop])) {
+                    newEmail.is_new = false;
+                    break;
+                }
+            }
+        }
         await Storage.save(Storage.SYNC_RESULT, newResult);
     }
 
