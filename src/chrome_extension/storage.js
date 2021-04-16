@@ -43,7 +43,7 @@ class Storage {
     }
 
     static async updateEmails(newResult) {
-        const PROPS = ["eid", "folder", "subject", "timestamp"];
+        const PROPS = ["folder", "subject", "timestamp"];
         let oldResult = await Storage.get(Storage.SYNC_RESULT);
         newResult.emails.forEach(email => email.is_new = true);
         for (let oldEmail of oldResult.emails) {
