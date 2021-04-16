@@ -26,13 +26,18 @@ EventManager.onreceiveAsync(EventManager.SYNC_EMAIL, async () => {
     } catch (error) {
         console.error("Failed to sync email");
         console.error(error);
-        await Badge.setBackgroundColor(Badge.COLOR_ERROR);
         EventManager.send(EventManager.EMAIL_SYNC_FAILURE);
     } finally {
         await Storage.save(Storage.LAST_ATTEMPT_SYNC_END_TIME, new Date().getTime());
         EventManager.setSyncEmailTimer(EventManager.SYNC_EMAIL_PERIOD_IN_MINUTES);
     }
 });
+
+EventManager.onreceiveAsync(EventManager.EMAIL_SYNC_FAILURE, async () => {
+    await Badge.setBackgroundColor(Badge.COLOR_ERROR);
+    let result = await Storage.get(Storage.SYNC_RESULT, {count: "x"});
+    await Badge.setText(result.count);
+})
 
 EventManager.addSyncEmailHandler(async alarm => {
     /*
