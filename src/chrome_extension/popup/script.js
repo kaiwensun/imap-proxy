@@ -19,7 +19,7 @@ function renderFolder([folder, emails]) {
     return `
     <div class="folder">
         <h3 class="folder-name">
-            ${folder.toUpperCase() === "INBOX" ? "收件箱" : folder}
+            ${folder.toUpperCase() === "INBOX" ? "收件箱" : folder} (${emails.length})
         </h3>
         <div class="folder-emails">
             ${emails.map(renderEmail).join("")}
@@ -124,7 +124,6 @@ async function renderLastUpdateTime() {
 async function renderAllEmails() {
     let result = await Storage.get(Storage.SYNC_RESULT);
     if (result !== undefined) {
-        console.log(groupEmailsByFolder(result.emails));
         let html = groupEmailsByFolder(result.emails).map(renderFolder).join("");
         document.querySelector("#emails").innerHTML = html;
     }
