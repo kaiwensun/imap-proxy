@@ -79,8 +79,9 @@ function groupEmailsWithinFolder(emails) {
         }
         groups[subject].count++;
         groups[subject].is_new ||= email.is_new;
-        if (!groups[subject].sender_names.includes(email.sender_name)) {
-            groups[subject].sender_names.push(email.sender_name);
+        let sender_name = email.sender_name || email.sender_addr.split("@")[0];
+        if (!groups[subject].sender_names.includes(sender_name)) {
+            groups[subject].sender_names.push(sender_name);
         }
     }
     let res = Object.values(groups);

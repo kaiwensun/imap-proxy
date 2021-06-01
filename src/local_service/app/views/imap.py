@@ -52,8 +52,6 @@ def fetch_emails(imap, email_ids):
                     attempt_decode(response_part[1]))
                 subject = parse_header(msg["Subject"])
                 sender = list(email.utils.parseaddr(parse_header(msg["FROM"])))
-                if not sender[0]:
-                    sender[0] = sender[1].split("@")[0]
                 receiver = email.utils.parseaddr(parse_header(msg["TO"]))
                 date_str = msg["Date"] or msg["Resent-Date"]
                 if not date_str:
