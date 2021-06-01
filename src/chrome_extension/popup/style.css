@@ -64,6 +64,10 @@ h3.folder-name {
     background-color: #ffffcc;
 }
 
+.cell.suspicious_spam::before {
+    content: "\1F9DF";  /* zombie */
+  }
+
 .thread-size {
     text-align: center;
 }

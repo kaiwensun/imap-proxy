@@ -35,7 +35,7 @@ function renderEmail(email) {
             <div class="thread-size cell">
                 ${email.count}
             </div>
-            <div class="senders ellipsis cell">
+            <div class="senders ellipsis cell ${email.is_missing_receiver_addr ? "suspicious_spam" : ""}">
                 ${email.sender_names.join(", ")}
             </div>
             <div class="subject ellipsis cell">
@@ -66,25 +66,28 @@ function timetampToString(timestamp) {
 }
 
 function groupEmailsWithinFolder(emails) {
-    let groups = {}
+    let threads = {}
     emails.sort((e1, e2) => e2.timestamp - e1.timestamp);
     for (let email of emails) {
         let subject = email.subject.replace(subjectPrefixes, "");
-        groups[subject] ||= {
+        threads[subject] ||= {
             count: 0,
             subject: subject,
             sender_names: [],
             last_active_time: email.timestamp,
-            is_new: false
+            is_new: false,
+            is_missing_receiver_addr: true
         }
-        groups[subject].count++;
-        groups[subject].is_new ||= email.is_new;
+        threads[subject].count++;
+        threads[subject].is_new ||= email.is_new;
+        // is_missing_reciver_addr is true only when all receiver_addr in the thread is missing
+        threads[subject].is_missing_receiver_addr &&= email.receiver_addr === ""
         let sender_name = email.sender_name || email.sender_addr.split("@")[0];
-        if (!groups[subject].sender_names.includes(sender_name)) {
-            groups[subject].sender_names.push(sender_name);
+        if (!threads[subject].sender_names.includes(sender_name)) {
+            threads[subject].sender_names.push(sender_name);
         }
     }
-    let res = Object.values(groups);
+    let res = Object.values(threads);
     res.sort((e1, e2) => e2.last_active_time - e1.last_active_time);
     return res;
 }
