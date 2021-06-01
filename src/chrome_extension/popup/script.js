@@ -102,7 +102,6 @@ function groupEmailsByFolder(emails) {
             } else if (folder2.toUpperCase() === "INBOX") {
                 return Number.POSITIVE_INFINITY;
             } else {
-                console.log(`${folder1}, ${folder2}; ${emails2[0].last_active_time}, ${emails1[0].last_active_time}`)
                 return emails2[0].last_active_time - emails1[0].last_active_time;
             }
         });
