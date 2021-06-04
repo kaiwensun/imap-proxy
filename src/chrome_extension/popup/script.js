@@ -35,7 +35,7 @@ function renderEmail(email) {
             <div class="thread-size cell">
                 ${email.count}
             </div>
-            <div class="senders ellipsis cell ${email.is_missing_receiver_addr ? "suspicious_spam" : ""}">
+            <div class="senders ellipsis cell ${email.is_spam ? "suspicious_spam" : ""}">
                 ${email.sender_names.join(", ")}
             </div>
             <div class="subject ellipsis cell">
@@ -76,12 +76,11 @@ function groupEmailsWithinFolder(emails) {
             sender_names: [],
             last_active_time: email.timestamp,
             is_new: false,
-            is_missing_receiver_addr: true
+            is_spam: true
         }
         threads[subject].count++;
         threads[subject].is_new ||= email.is_new;
-        // is_missing_reciver_addr is true only when all receiver_addr in the thread is missing
-        threads[subject].is_missing_receiver_addr &&= email.receiver_addr === ""
+        threads[subject].is_spam &&= email.is_spam
         let sender_name = email.sender_name || email.sender_addr.split("@")[0];
         if (!threads[subject].sender_names.includes(sender_name)) {
             threads[subject].sender_names.push(sender_name);

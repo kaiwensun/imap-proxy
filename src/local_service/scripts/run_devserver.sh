@@ -10,7 +10,7 @@ if [ ! -d "$VENV" ]; then
 fi
 activate_venv "$VENV"
 
-python dev_server.py
+python3 dev_server.py
 
 deactivate
 popd > /dev/null

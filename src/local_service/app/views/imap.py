@@ -1,6 +1,8 @@
 import email
+import email.policy
 import codecs
 from config.settings import USER_NAME, IMAP_TOKEN, IMAP_ADDRESS, APP_NAME, APP_VERSION
+from app.views.spam import is_spam
 from imaplib import IMAP4_SSL
 from flask import Blueprint
 from datetime import datetime
@@ -49,7 +51,8 @@ def fetch_emails(imap, email_ids):
         for response_part in data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_string(
-                    attempt_decode(response_part[1]))
+                    attempt_decode(response_part[1]),
+                    policy=email.policy.default)
                 subject = parse_header(msg["Subject"])
                 sender = list(email.utils.parseaddr(parse_header(msg["FROM"])))
                 receiver = email.utils.parseaddr(parse_header(msg["TO"]))
@@ -72,7 +75,8 @@ def fetch_emails(imap, email_ids):
                     "sender_addr": sender[1],
                     "receiver_name": receiver[0],
                     "receiver_addr": receiver[1],
-                    "timestamp": timestamp
+                    "timestamp": timestamp,
+                    "is_spam": is_spam(msg)
                 })
     return res
 
