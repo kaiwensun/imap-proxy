@@ -31,10 +31,24 @@ def count_unread():
                     email["utf7-folder"] = byte_folder_name.decode("ascii")
                 emails.extend(folder_emails)
         print(emails)
+        delete_spams(imap, emails)
         return {
             "count": len(emails),
             "emails": emails
         }
+
+
+def delete_spams(imap, emails):
+    for email in emails:
+        if email["is_spam"]:
+            print("DELETING")
+            print(email)
+            validate_resp(imap.select(
+                f'"{email["utf7-folder"]}"', readonly=False))
+            print(imap.store(email["eid"], "+FLAGS", "\\Deleted"))
+            validate_resp(imap.select(readonly=True))
+            # email ids change after one deletion
+            break
 
 
 def fetch_emails(imap, email_ids):
@@ -45,7 +59,7 @@ def fetch_emails(imap, email_ids):
         email_ids = email_ids.split()
 
     for email_id in email_ids:
-        data = imap.fetch(email_id, "(RFC822)")[1]
+        data = validate_resp(imap.fetch(email_id, "(RFC822)"))
         print("=" * 40)
         print(email_id)
         for response_part in data:
