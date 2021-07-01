@@ -68,8 +68,8 @@ def fetch_emails(imap, email_ids):
                     attempt_decode(response_part[1]),
                     policy=email.policy.default)
                 subject = parse_header(msg["Subject"])
-                sender = list(email.utils.parseaddr(parse_header(msg["FROM"])))
-                receiver = email.utils.parseaddr(parse_header(msg["TO"]))
+                sender = list(email.utils.parseaddr(parse_header(msg["FROM"])) or '')
+                receiver = email.utils.parseaddr(parse_header(msg["TO"] or ''))
                 date_str = msg["Date"] or msg["Resent-Date"]
                 if not date_str:
                     date_str = msg["Received"].split("\n")[-1].strip()
