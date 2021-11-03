@@ -16,7 +16,7 @@ def feature1(msg):
     """
     sent by xxx123@gmail.com, subject starting with green heart, content contains url http://randomurl.xyz
     """
-    FROM_PATTERN = "^[a-z]+[0-9]+@gmail.com$"
+    FROM_PATTERN = "^[a-z]+\.?[0-9]+@gmail.com$"
     TO_PATTERN = "^undisclosed-recipients:;$"
     SUBJECT_PATTERN = ("^["
                        u"\U0001F600-\U0001F64F"  # emoticons
