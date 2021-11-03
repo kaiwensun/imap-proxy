@@ -1,5 +1,12 @@
 import re
+import datetime
+import requests
 import emoji
+
+BLACKLIST = {
+    "last_update": None,
+    "domains": None
+}
 
 
 def get_payload(msg):
@@ -9,7 +16,7 @@ def get_payload(msg):
 
 
 def is_spam(msg):
-    return feature1(msg)
+    return feature1(msg) or feature2(msg)
 
 
 def feature1(msg):
@@ -18,12 +25,6 @@ def feature1(msg):
     """
     FROM_PATTERN = "^[a-z]+\.?[0-9]+@gmail.com$"
     TO_PATTERN = "^undisclosed-recipients:;$"
-    SUBJECT_PATTERN = ("^["
-                       u"\U0001F600-\U0001F64F"  # emoticons
-                       u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                       u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                       u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                       "]" )
     CONTENT_PATTERN = "http://.+\\.xyz"
     return bool(
         re.search(FROM_PATTERN, msg["from"]) and
@@ -32,3 +33,25 @@ def feature1(msg):
         msg["subject"][0] in emoji.UNICODE_EMOJI_ENGLISH and
         msg["subject"][1] == ' ' and
         re.search(CONTENT_PATTERN, get_payload(msg)))
+
+def feature2(msg):
+    """
+    content contains url from http://www.joewein.net/dl/bl/dom-bl.txt
+    """
+    TO_PATTERN = "^undisclosed-recipients:;$"
+    if not re.search(TO_PATTERN, msg["to"]):
+        return False
+
+    def fetch_blacklist():
+        SOURCE = "http://www.joewein.net/dl/bl/dom-bl.txt"
+        resp = requests.get(SOURCE)
+        if resp.ok:
+            BLACKLIST["domains"] = [f"http://{x.decode('ascii')}" for x in resp.iter_lines()] + [f"https://{x.decode('ascii')}" for x in resp.iter_lines()]
+    def lazy_load_blacklist():
+        if BLACKLIST["last_update"] != datetime.date.today():
+            fetch_blacklist()
+            BLACKLIST["last_update"] = datetime.date.today()
+        return BLACKLIST["domains"]
+
+    payload = get_payload(msg)
+    return any(domain in payload for domain in lazy_load_blacklist())
