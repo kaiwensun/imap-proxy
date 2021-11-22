@@ -30,8 +30,8 @@ def feature1(msg):
         re.search(FROM_PATTERN, msg["from"]) and
         re.search(TO_PATTERN, msg["to"]) and
         len(msg["subject"]) > 3 and
-        msg["subject"][0] in emoji.UNICODE_EMOJI_ENGLISH and
-        msg["subject"][1] == ' ' and
+        # msg["subject"][0] in emoji.UNICODE_EMOJI_ENGLISH and
+        # msg["subject"][1] == ' ' and
         re.search(CONTENT_PATTERN, get_payload(msg)))
 
 def feature2(msg):
