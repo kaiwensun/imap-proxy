@@ -23,7 +23,7 @@ def feature1(msg):
     """
     sent by xxx123@gmail.com, subject starting with green heart, content contains url http://randomurl.xyz
     """
-    FROM_PATTERN = "^[a-z]+\.?[0-9]+@gmail.com$"
+    FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
     TO_PATTERN = "^undisclosed-recipients:;$"
     CONTENT_PATTERN = "http://.+\\.xyz"
     return bool(
@@ -34,19 +34,36 @@ def feature1(msg):
         # msg["subject"][1] == ' ' and
         re.search(CONTENT_PATTERN, get_payload(msg)))
 
+
 def feature2(msg):
     """
     content contains url from http://www.joewein.net/dl/bl/dom-bl.txt
     """
     TO_PATTERN = "^undisclosed-recipients:;$"
-    if not re.search(TO_PATTERN, msg["to"]):
+    FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
+    if not re.search(TO_PATTERN, msg["to"]) and not re.search(FROM_PATTERN, msg["from"]):
         return False
 
     def fetch_blacklist():
-        SOURCE = "http://www.joewein.net/dl/bl/dom-bl.txt"
-        resp = requests.get(SOURCE)
-        if resp.ok:
-            BLACKLIST["domains"] = [f"http://{x.decode('ascii')}" for x in resp.iter_lines()] + [f"https://{x.decode('ascii')}" for x in resp.iter_lines()]
+        SOURCES = [
+            "http://www.joewein.net/dl/bl/dom-bl.txt",
+            "https://badmojr.github.io/1Hosts/Pro/domains.txt"
+        ]
+        domains = set()
+        for source in SOURCES:
+            resp = requests.get(source)
+            if resp.ok:
+                for line in resp.iter_lines():
+                    if line and not line.startswith(b"#"):
+                        domain = line.decode('ascii')
+                        if (domain.startswith("http://")):
+                            domain = domain[len("http://"):]
+                        if (domain.startswith("https://")):
+                            domain = domain[len("https://"):]
+                        domains.add(f"http://{domain}")
+                        domains.add(f"https://{domain}")
+        BLACKLIST["domains"] = list(domains)
+
     def lazy_load_blacklist():
         if BLACKLIST["last_update"] != datetime.date.today():
             fetch_blacklist()
