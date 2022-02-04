@@ -58,6 +58,7 @@ h3.folder-name {
     padding: 0 4px;
     background-color: #ffffff;
     line-height: 150%;
+    white-space: nowrap;
 }
 
 .new-email .cell {
