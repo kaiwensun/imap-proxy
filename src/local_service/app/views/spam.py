@@ -25,7 +25,7 @@ def feature1(msg):
     """
     FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
     TO_PATTERN = "^undisclosed-recipients:;$"
-    CONTENT_PATTERN = "http://.+\\.xyz"
+    CONTENT_PATTERN = "https?://.+\\.xyz"
     return bool(
         re.search(FROM_PATTERN, msg["from"]) and
         re.search(TO_PATTERN, msg["to"]) and
