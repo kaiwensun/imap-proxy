@@ -25,14 +25,19 @@ def feature1(msg):
     """
     FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
     TO_PATTERN = "^undisclosed-recipients:;$"
-    CONTENT_PATTERN = "https?://.+\\.xyz"
+    BAD_WEBSITE_PATTERN = "https?://.+\\.xyz"
+    FAKE_UNSUBSCRIBE_PATTERN = "Click Here To Unsubscribe.{,10}https://docs.google.com/forms/d/"
     return bool(
         re.search(FROM_PATTERN, msg["from"]) and
         re.search(TO_PATTERN, msg["to"]) and
         len(msg["subject"]) > 3 and
         # msg["subject"][0] in emoji.UNICODE_EMOJI_ENGLISH and
         # msg["subject"][1] == ' ' and
-        re.search(CONTENT_PATTERN, get_payload(msg)))
+        (
+            re.search(BAD_WEBSITE_PATTERN, get_payload(msg)) or
+            re.search(FAKE_UNSUBSCRIBE_PATTERN, get_payload(msg), flags=re.IGNORECASE | re.DOTALL)
+        )
+    )
 
 
 def feature2(msg):
