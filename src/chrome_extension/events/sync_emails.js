@@ -25,7 +25,7 @@ EventManager.onreceiveAsync(EventManager.SYNC_EMAIL, async () => {
         EventManager.send(EventManager.EMAIL_SYNC_SUCCESS);
     } catch (error) {
         console.error("Failed to sync email");
-        console.error(error);
+        console.error(JSON.stringify(error));
         EventManager.send(EventManager.EMAIL_SYNC_FAILURE);
     } finally {
         await Storage.save(Storage.LAST_ATTEMPT_SYNC_END_TIME, new Date().getTime());

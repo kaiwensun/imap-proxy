@@ -27,15 +27,18 @@ def feature1(msg):
     TO_PATTERN = "^undisclosed-recipients:;$"
     BAD_WEBSITE_PATTERN = "https?://.+\\.xyz"
     FAKE_UNSUBSCRIBE_PATTERN = "Click Here To Unsubscribe.{,10}https://docs.google.com/forms/d/"
+    FAKE_UNSUBSCRIBE_PATTERN2 = "unsubsribe"
+    payload = get_payload(msg)
     return bool(
-        re.search(FROM_PATTERN, msg["from"]) and
-        re.search(TO_PATTERN, msg["to"]) and
+        re.search(FROM_PATTERN, msg.get("from", "")) and
+        re.search(TO_PATTERN, msg.get("to", "")) and
         len(msg["subject"]) > 3 and
         # msg["subject"][0] in emoji.UNICODE_EMOJI_ENGLISH and
         # msg["subject"][1] == ' ' and
         (
-            re.search(BAD_WEBSITE_PATTERN, get_payload(msg)) or
-            re.search(FAKE_UNSUBSCRIBE_PATTERN, get_payload(msg), flags=re.IGNORECASE | re.DOTALL)
+            re.search(BAD_WEBSITE_PATTERN, payload) or
+            re.search(FAKE_UNSUBSCRIBE_PATTERN, payload, flags=re.IGNORECASE | re.DOTALL) or
+            re.search(FAKE_UNSUBSCRIBE_PATTERN2, payload, flags=re.IGNORECASE)
         )
     )
 
@@ -46,7 +49,7 @@ def feature2(msg):
     """
     TO_PATTERN = "^undisclosed-recipients:;$"
     FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
-    if not re.search(TO_PATTERN, msg["to"]) and not re.search(FROM_PATTERN, msg["from"]):
+    if not re.search(TO_PATTERN, msg.get("to", "")) and not re.search(FROM_PATTERN, msg.get("from", "")):
         return False
 
     def fetch_blacklist():
