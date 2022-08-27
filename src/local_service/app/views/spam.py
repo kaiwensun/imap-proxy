@@ -16,7 +16,7 @@ def get_payload(msg):
 
 
 def is_spam(msg):
-    return feature1(msg) or feature2(msg)
+    return feature1(msg) or feature2(msg) or feature3(msg)
 
 
 def feature1(msg):
@@ -42,8 +42,14 @@ def feature1(msg):
         )
     )
 
-
 def feature2(msg):
+    """
+    sent from .xyz or .click domain
+    """
+    FROM_PATTERN = "\.(xyz|click)$"
+    return bool(re.search(FROM_PATTERN, msg.get("from", "")))
+
+def feature3(msg):
     """
     content contains url from http://www.joewein.net/dl/bl/dom-bl.txt
     """
