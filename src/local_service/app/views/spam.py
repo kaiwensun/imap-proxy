@@ -46,7 +46,7 @@ def feature2(msg):
     """
     sent from .xyz or .click domain
     """
-    FROM_PATTERN = "\.(xyz|click)$"
+    FROM_PATTERN = "\.(xyz|click|lol|quest)(>?)$"
     return bool(re.search(FROM_PATTERN, msg.get("from", "")))
 
 def feature3(msg):
