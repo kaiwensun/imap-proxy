@@ -16,7 +16,7 @@ def get_payload(msg):
 
 
 def is_spam(msg):
-    return feature1(msg) or feature2(msg) or feature3(msg)
+    return feature1(msg) or feature2(msg) or feature3(msg) or feature4(msg)
 
 
 def feature1(msg):
@@ -50,6 +50,12 @@ def feature2(msg):
     return bool(re.search(FROM_PATTERN, msg.get("from", "")))
 
 def feature3(msg):
+    payload = get_payload(msg)
+    PATTERN1 = '<span style="font-size: 18pt; font-family: Arial; color: rgb(17, 85, 204); '
+    PATTERN2 = 'font-variant-numeric: normal; font-variant-east-asian: normal; text-decoration-line: underline; text-decoration-skip-ink: none; vertical-align: baseline; white-space: pre-wrap;">'
+    return PATTERN1 in payload and PATTERN2 in payload
+
+def feature4(msg):
     """
     content contains url from http://www.joewein.net/dl/bl/dom-bl.txt
     """
