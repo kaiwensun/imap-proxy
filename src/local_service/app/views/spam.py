@@ -36,7 +36,7 @@ def feature1(msg):
     sent by xxx123@gmail.com, subject starting with green heart, content contains url http://randomurl.xyz
     """
 
-    FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]+@gmail.com(>?)$"
+    FROM_PATTERN = "^(.*<)?[a-z]+\.?[0-9]*@gmail.com(>?)$"
     TO_PATTERN = "^undisclosed-recipients:;$"
     BAD_WEBSITE_PATTERN = "https?://.+\\.xyz"
     FAKE_UNSUBSCRIBE_PATTERN = "Click Here To Unsubscribe.{,10}https://docs.google.com/forms/d/"
