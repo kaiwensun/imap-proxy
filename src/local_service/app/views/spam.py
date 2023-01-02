@@ -1,7 +1,10 @@
+import sys
 import re
 import datetime
 import requests
 import collections
+
+from config.settings import USER_NAME
 
 BLACKLIST = {
     "last_update": None,
@@ -20,7 +23,9 @@ def get_payload(msg, include_attachment=False):
 
 
 def is_spam(msg):
-    return feature1(msg) or feature2(msg) or feature3(msg) or feature4(msg)
+    module = sys.modules[__name__]
+    func_names = [name for name in dir(module) if name.startswith('feature')]
+    return any(getattr(module, name)(msg) for name in func_names)
 
 
 def short_text_with_long_attachment(msg, payload_text):
@@ -71,6 +76,12 @@ def feature3(msg):
     return PATTERN1 in payload and PATTERN2 in payload
 
 def feature4(msg):
+    FROM_PATTERN = " <.+@\w+-\w+.info>$"
+    SENDER_PATTERN = f"-{USER_NAME.replace('@', '=')}@\w+-\w+.info$"
+    return bool(re.search(SENDER_PATTERN, msg.get("sender", ""))
+        and re.search(FROM_PATTERN, msg.get("from", "")))
+
+def feature5(msg):
     """
     content contains url from http://www.joewein.net/dl/bl/dom-bl.txt
     """
