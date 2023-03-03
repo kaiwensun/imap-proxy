@@ -76,8 +76,8 @@ def feature3(msg):
     return PATTERN1 in payload and PATTERN2 in payload
 
 def feature4(msg):
-    FROM_PATTERN = " <.+@[-\\w]+\.info>$"
-    SENDER_PATTERN = f"-{USER_NAME.replace('@', '=')}@[-\\w]+\\.info$"
+    FROM_PATTERN = " <.+@[-\\w]+\.(info|autos)>$"
+    SENDER_PATTERN = f"-{USER_NAME.replace('@', '=')}@[-\\w]+\\.(info|autos)$"
     return bool(re.search(SENDER_PATTERN, msg.get("sender", ""))
         and re.search(FROM_PATTERN, msg.get("from", "")))
 
