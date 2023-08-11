@@ -144,3 +144,6 @@ def feature5(msg):
         if is_in_trie(blacklist, payload, i):
             return True
     return False
+
+def feature6(msg):
+    return msg.get('X-Spam') == "yes"
