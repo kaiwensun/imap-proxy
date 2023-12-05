@@ -96,13 +96,14 @@ def fetch_emails(imap, email_ids):
 
 
 def attempt_decode(msg):
-    codes = ["utf-8", "gb2312", "gbk"]
+    codes = ["utf-8", "gb2312", "gbk", "iso-8859-1"]
     for code in codes:
         try:
             return msg.decode(code)
         except ValueError as e:
             error = e
-    raise error
+    print(f"[WARN] ignoring decoding error: {error}")
+    return msg.decode("utf-8", errors="ignore")
 
 
 def decode_folder_name(name):
